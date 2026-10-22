@@ -1,0 +1,118 @@
+
+const startBtn = document.getElementById("startBtn");
+const stopBtn = document.getElementById("stopBtn");
+const output = document.getElementById("output");
+const status = document.getElementById("status");
+const language = document.getElementById("language");
+const copyBtn = document.getElementById("copyBtn");
+const clearBtn = document.getElementById("clearBtn");
+
+const SpeechRecognition =
+  window.SpeechRecognition ||
+  window.webkitSpeechRecognition;
+
+let recognition;
+let listening = false;
+let finalText = "";
+
+if (!SpeechRecognition) {
+  status.textContent =
+    "Speech recognition is not supported. Try Google Chrome.";
+  startBtn.disabled = true;
+} else {
+  recognition = new SpeechRecognition();
+
+  recognition.continuous = true;
+  recognition.interimResults = true;
+  recognition.lang = language.value;
+
+  recognition.onstart = () => {
+    listening = true;
+    status.textContent = "🎙️ Listening... Speak now!";
+    startBtn.disabled = true;
+    stopBtn.disabled = false;
+    language.disabled = true;
+  };
+
+  recognition.onresult = (event) => {
+    let interimText = "";
+
+    for (let i = event.resultIndex;
+         i < event.results.length; i++) {
+      const transcript = event.results[i][0].transcript;
+
+      if (event.results[i].isFinal) {
+        finalText += transcript + " ";
+      } else {
+        interimText += transcript;
+      }
+    }
+
+    output.value = finalText + interimText;
+  };
+
+  recognition.onerror = (event) => {
+    status.textContent = "Error: " + event.error;
+
+    if (event.error === "not-allowed") {
+      status.textContent =
+        "Microphone access denied. Allow microphone permission.";
+    }
+  };
+
+  recognition.onend = () => {
+    listening = false;
+    startBtn.disabled = false;
+    stopBtn.disabled = true;
+    language.disabled = false;
+
+    if (!status.textContent.startsWith("Error:") &&
+        !status.textContent.includes("denied")) {
+      status.textContent = "Ready to listen";
+    }
+  };
+
+  startBtn.addEventListener("click", () => {
+    if (listening) return;
+
+    recognition.lang = language.value;
+    finalText = output.value.trim();
+
+    if (finalText) finalText += " ";
+
+    try {
+      recognition.start();
+    } catch (error) {
+      status.textContent = "Unable to start. Please try again.";
+    }
+  });
+
+  stopBtn.addEventListener("click", () => {
+    if (listening) {
+      recognition.stop();
+      status.textContent = "Recognition stopped";
+    }
+  });
+}
+
+copyBtn.addEventListener("click", async () => {
+  if (!output.value.trim()) {
+    status.textContent = "No text to copy!";
+    return;
+  }
+
+  try {
+    await navigator.clipboard.writeText(output.value);
+    status.textContent = "Text copied successfully!";
+  } catch (error) {
+    output.select();
+    status.textContent = "Select the text and copy it manually.";
+  }
+});
+
+clearBtn.addEventListener("click", () => {
+  output.value = "";
+  finalText = "";
+  status.textContent = "Text cleared. Ready to listen.";
+});
+

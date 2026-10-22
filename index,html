@@ -1,0 +1,52 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Speech Recognition App</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <main class="app">
+    <div class="icon">🎙️</div>
+
+    <h1>Speech Recognition</h1>
+    <p class="subtitle">
+      Convert your voice into text instantly.
+    </p>
+
+    <div class="status" id="status">
+      Ready to listen
+    </div>
+
+    <label for="language">Choose Language</label>
+    <select id="language">
+      <option value="en-US">English (US)</option>
+      <option value="en-IN">English (India)</option>
+      <option value="ta-IN">Tamil</option>
+      <option value="hi-IN">Hindi</option>
+    </select>
+
+    <div class="buttons">
+      <button id="startBtn" class="start">🎤 Start Listening</button>
+      <button id="stopBtn" class="stop" disabled>⏹ Stop</button>
+    </div>
+
+    <label for="output">Recognized Text</label>
+    <textarea id="output"
+      placeholder="Your speech will appear here..."
+      rows="8"></textarea>
+
+    <div class="bottom-buttons">
+      <button id="copyBtn" class="secondary">📋 Copy Text</button>
+      <button id="clearBtn" class="secondary">🗑 Clear</button>
+    </div>
+
+    <p class="footer">Built with HTML, CSS & JavaScript</p>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
